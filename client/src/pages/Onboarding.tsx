@@ -72,14 +72,14 @@ const levels = [
 ];
 
 const weekDays = [
-    "Mon",
-    "Tue",
-    "Wed",
-    "Thu",
-    "Fri",
-    "Sat",
-    "Sun",
-];
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+]
 
 const preferredSplits = [
     "Full Body",
@@ -110,11 +110,7 @@ export default function Onboarding() {
     const [height, setHeight] = useState("");
     const [weight, setWeight] = useState("");
 
-    const [selectedDays, setSelectedDays] = useState([
-        "Mon",
-        "Wed",
-        "Fri",
-    ]);
+    const [selectedDays, setSelectedDays] = useState("2");
 
     const progress = ((currentStep + 1) / steps.length) * 100;
 
@@ -136,8 +132,8 @@ export default function Onboarding() {
             weight,
             selectedDays,
             selectedTime,
-            preferredSplits,
-            enviornmentOptions
+            splits,
+            enviornment
         };
 
         console.log("Form submitted:", data);
@@ -280,24 +276,16 @@ export default function Onboarding() {
                                         <div className="flex flex-wrap gap-3">
 
                                             {weekDays.map((day) => {
-
-                                                const selected = selectedDays.includes(day);
+                                                const selected = selectedDays === day;
 
                                                 return (
                                                     <button
                                                         key={day}
-                                                        onClick={() =>
-                                                            setSelectedDays((prev) =>
-                                                                selected
-                                                                    ? prev.filter((d) => d !== day)
-                                                                    : [...prev, day]
-                                                            )
-                                                        }
+                                                        onClick={() => setSelectedDays(day)}
                                                         className={`glass rounded-xl px-5 py-3 transition ${selected
                                                             ? "border-red-500 bg-red-500/10"
                                                             : "hover:border-red-500"
                                                             }`}
-
                                                     >
                                                         {selected && (
                                                             <div className="red-gradient flex h-7 w-7 items-center justify-center rounded-full">
@@ -307,7 +295,6 @@ export default function Onboarding() {
                                                         {day}
                                                     </button>
                                                 );
-
                                             })}
 
                                         </div>
@@ -409,11 +396,19 @@ export default function Onboarding() {
                                         </div>
                                         <div className="glass rounded-xl p-4 flex justify-between">
                                             <span className="text-muted">Workout Days</span>
-                                            <span>{selectedDays.join(", ")}</span>
+                                            <span>{selectedDays}</span>
                                         </div>
                                         <div className="glass rounded-xl p-4 flex justify-between">
                                             <span className="text-muted">Session</span>
                                             <span>{selectedTime}</span>
+                                        </div>
+                                        <div className="glass rounded-xl p-4 flex justify-between">
+                                            <span className="text-muted">Splits</span>
+                                            <span>{splits}</span>
+                                        </div>
+                                        <div className="glass rounded-xl p-4 flex justify-between">
+                                            <span className="text-muted">Enviornment</span>
+                                            <span>{enviornment}</span>
                                         </div>
 
                                     </div>

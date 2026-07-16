@@ -13,6 +13,15 @@ datasource db {
 }
 
 model user_profiles {
-  user_id String @id @db.Uuid
-  goal String @db.VarChar(20)
+  user_id        String   @id @db.Uuid
+  goal           String   @db.VarChar(20)
+  level          String   @db.VarChar(20)
+  age            Int
+  weight         Int
+  height         Int
+  day_per_week   Int
+  session_length Int
+  enviornment    String   @db.VarChar(20)
+  splits         String   @db.VarChar(20)
+  updated_at     DateTime @default(now()) @db.Timestamptz(6)
 }
