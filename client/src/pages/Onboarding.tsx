@@ -7,6 +7,7 @@ import OptionCard from "../components/ui/OptionCard";
 import { useState } from "react";
 import Input from "../components/ui/Input";
 import { useNavigate } from "react-router-dom";
+import type { UserProfile } from "../types";
 
 
 const steps = [
@@ -44,22 +45,22 @@ const steps = [
 
 const goals = [
     {
-        id: "muscle",
+        id: "muscle" as const,
         title: "Build Muscle",
         description: "Increase size & aesthetics",
     },
     {
-        id: "strength",
+        id: "strength" as const,
         title: "Build Strength",
         description: "Powerlifting focused",
     },
     {
-        id: "fat",
+        id: "fat" as const,
         title: "Lose Fat",
         description: "Burn fat efficiently",
     },
     {
-        id: "endurance",
+        id: "endurance" as const,
         title: "Improve Endurance",
         description: "Cardio & stamina",
     },
@@ -69,7 +70,7 @@ const levels = [
     "Beginner",
     "Intermediate",
     "Advanced",
-];
+] as const;
 
 const weekDays = [
     "1",
@@ -86,7 +87,7 @@ const preferredSplits = [
     "Upper/Lower",
     "Push/Pull/Legs",
     "Bro Split",
-];
+] as const;
 
 const enviornmentOptions = [
     "Commercial Gym",
@@ -96,12 +97,13 @@ const enviornmentOptions = [
 
 
 export default function Onboarding() {
+    const { user, saveProfile } = useAuth();
     const navigate = useNavigate();
 
     const [currentStep, setCurrentStep] = useState(0);
-    const [goal, setGoal] = useState("muscle");
-    const [level, setLevel] = useState("Intermediate");
-    const [splits, setSplits] = useState("Full Body");
+    const [goal, setGoal] = useState<"muscle" | "strength" | "fat" | "endurance">("muscle");
+    const [level, setLevel] = useState<"Beginner" | "Intermediate" | "Advanced">("Intermediate");
+    const [splits, setSplits] = useState<"Full Body" | "Upper/Lower" | "Push/Pull/Legs" | "Bro Split">("Full Body");
     const [enviornment, setEnviornment] = useState("Commercial Gym")
     const [selectedTime, setSelectedTime] = useState("30 min");
 
@@ -111,12 +113,24 @@ export default function Onboarding() {
     const [weight, setWeight] = useState("");
 
     const [selectedDays, setSelectedDays] = useState("2");
+    const [error, setError] = useState("");
 
     const progress = ((currentStep + 1) / steps.length) * 100;
 
     const CurrentIcon = steps[currentStep].icon;
 
-    const { user } = useAuth();
+    const handleNext = () => {
+        if (currentStep === 1) {
+            if (!age.trim() || !height.trim() || !weight.trim()) {
+                setError("Please enter your age, height, and weight to continue.");
+                return;
+            }
+        }
+
+        setError("");
+        setCurrentStep((prev) => prev + 1);
+    };
+
     console.log("oki:", user);
 
     if (!user) {
@@ -136,13 +150,22 @@ export default function Onboarding() {
             enviornment
         };
 
-        console.log("Form submitted:", data);
-
-        if (typeof window !== "undefined") {
-            window.localStorage.setItem("onboardingCompleted", "true");
+        const profile: Omit<UserProfile, 'userId' | 'updatedAt'> = {
+            goal: goal as UserProfile['goal'],
+            levels: level as UserProfile['levels'],
+            age: parseInt(age) as UserProfile['age'],
+            height: parseInt(height) as UserProfile['height'],
+            weight: parseInt(weight) as UserProfile['weight'],
+            daysPerWeek: parseInt(selectedDays) as UserProfile['daysPerWeek'],
+            splits: splits as UserProfile['splits'],
+            enviornment: enviornment as UserProfile['enviornment'],
+            sessionLength: parseInt(selectedTime) as UserProfile['sessionLength'],
         }
 
-        navigate("/profile", { replace: true });
+
+
+        console.log("Form submitted:", profile);
+        saveProfile(profile);
     };
     return (
         <SignedIn>
@@ -234,13 +257,23 @@ export default function Onboarding() {
                                     </div>
 
                                     <div className="grid gap-4 md:grid-cols-3">
+                                        {error && (
+                                            <div className="md:col-span-3 rounded-xl border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-400">
+                                                {error}
+                                            </div>
+                                        )}
 
                                         <Input
                                             label="Age"
                                             type="number"
                                             placeholder="20"
                                             value={age}
-                                            onChange={(e) => setAge(e.target.value)}
+                                            onChange={(e) => {
+                                                setAge(e.target.value);
+                                                if (error) setError("");
+                                            }}
+                                            required
+                                            min="1"
                                         />
 
                                         <Input
@@ -248,7 +281,12 @@ export default function Onboarding() {
                                             type="number"
                                             placeholder="175"
                                             value={height}
-                                            onChange={(e) => setHeight(e.target.value)}
+                                            onChange={(e) => {
+                                                setHeight(e.target.value);
+                                                if (error) setError("");
+                                            }}
+                                            required
+                                            min="60"
                                         />
 
                                         <Input
@@ -256,7 +294,12 @@ export default function Onboarding() {
                                             type="number"
                                             placeholder="70"
                                             value={weight}
-                                            onChange={(e) => setWeight(e.target.value)}
+                                            onChange={(e) => {
+                                                setWeight(e.target.value);
+                                                if (error) setError("");
+                                            }}
+                                            required
+                                            min="1"
                                         />
 
                                     </div>
@@ -429,7 +472,7 @@ export default function Onboarding() {
                                     {currentStep < steps.length - 1 ? (
                                         <Button
                                             type="button"
-                                            onClick={() => setCurrentStep((prev) => prev + 1)}
+                                            onClick={handleNext}
                                         >
                                             Continue
                                         </Button>
