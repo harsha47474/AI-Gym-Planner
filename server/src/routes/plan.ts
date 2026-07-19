@@ -1,3 +1,57 @@
-import express, { Request, Response } from 'express'
+import express, { type Request, type Response } from 'express'
+import { prisma } from '../lib/prisma';
+import { v4 as uuid } from 'uuid';
 
 export const planRouter = express.Router();
+
+planRouter.post("/generate", async (req: Request, res: Response) => {
+    try {
+        const { userId } = req.body;
+
+        if (!userId) {
+            return res.status(400).json({ error: "User id is required" });
+        }
+
+        const profile = await prisma.user_profiles.findUnique({
+            where: { user_id: userId }
+        });
+
+        if (!profile) {
+            return res.status(400).json({ error: "User profile not found" });
+        }
+
+
+        // fetching the pplans
+
+        const latest_plan = await prisma.training_plans.findFirst({
+            where: { user_id: userId },
+            orderBy: { created_at: "desc" },
+            select: { version: true }
+        })
+
+        const nextVersion = latest_plan ? latest_plan.version + 1 : 1;
+
+        let planJson;
+
+        const planText = JSON.stringify(planJson, null, 2);
+
+        const newPlan = await prisma.training_plans.create({
+            data: {
+                id: uuid(),
+                user_id: userId,
+                plan_json: planJson as any,
+                plan_text: planText,
+                version: nextVersion,
+            },
+        })
+
+        return res.json({
+            id: newPlan.id,
+            version: newPlan.version,
+            createdAt: newPlan.created_at,
+        })
+    } catch (error) {
+        console.log("Error generating a plan", error.message);
+        return res.status(500).json({ error: "Failed to generate the plan" });
+    }
+})

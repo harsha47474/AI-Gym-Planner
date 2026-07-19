@@ -66,6 +66,8 @@ profileRouter.post("/", async (req: Request, res: Response) => {
                 updated_at: new Date()
             }
         })
+
+        return res.status(200).json({ success: true });
     } catch (error) {
         console.log("Error in saving the profileData in the db", error.message);
         res.status(500).json({ error: "Failed to save profile" });
