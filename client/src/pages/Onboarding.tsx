@@ -83,16 +83,16 @@ const weekDays = [
 ]
 
 const preferredSplits = [
-    "Full Body",
-    "Upper/Lower",
-    "Push/Pull/Legs",
-    "Bro Split",
+    "Full_Body",
+    "Upper_Lower",
+    "Push_Pull_Legs",
+    "Bro_Split",
 ] as const;
 
 const enviornmentOptions = [
-    "Commercial Gym",
-    "Home Gym",
-    "Bodyweight Only",
+    "Commercial_Gym",
+    "Home_Gym",
+    "Bodyweight_Only",
 ];
 
 
@@ -103,8 +103,8 @@ export default function Onboarding() {
     const [currentStep, setCurrentStep] = useState(0);
     const [goal, setGoal] = useState<"muscle" | "strength" | "fat" | "endurance">("muscle");
     const [level, setLevel] = useState<"Beginner" | "Intermediate" | "Advanced">("Intermediate");
-    const [splits, setSplits] = useState<"Full Body" | "Upper/Lower" | "Push/Pull/Legs" | "Bro Split">("Full Body");
-    const [enviornment, setEnviornment] = useState("Commercial Gym")
+    const [splits, setSplits] = useState<"Full_Body" | "Upper_Lower" | "Push_Pull_Legs" | "Bro_Split">("Full_Body");
+    const [enviornment, setEnviornment] = useState("Commercial_Gym")
     const [selectedTime, setSelectedTime] = useState("30 min");
     const [isGenerating, setIsGenerating] = useState(false);
 
