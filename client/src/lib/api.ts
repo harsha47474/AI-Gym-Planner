@@ -16,11 +16,27 @@ async function post(path: string, body: object) {
     return res.json();
 }
 
+async function get(path: string){
+    const res = await fetch(`${BASE_URL}/api/${path}`)
+    
+    if(!res.ok){
+        throw new Error(
+            (await res.json().catch(() => ({}))) || "Request failed"
+        )
+    }
+}
+
 export const api = {
     saveProfile: (
         userId: string,
         profileData: Omit<UserProfile, 'userId' | 'updatedAt'>,
     ) => {
-        post("profile", { userId, profileData });
+        return post("profile", { userId, profileData });
+    },
+
+    generatePlan: (
+        userId: string
+    ) => {
+        return post("plan/generate", { userId });
     }
 }

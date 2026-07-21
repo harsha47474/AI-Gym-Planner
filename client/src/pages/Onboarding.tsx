@@ -97,7 +97,7 @@ const enviornmentOptions = [
 
 
 export default function Onboarding() {
-    const { user, saveProfile } = useAuth();
+    const { user, saveProfile, generatePlan } = useAuth();
     const navigate = useNavigate();
 
     const [currentStep, setCurrentStep] = useState(0);
@@ -140,7 +140,6 @@ export default function Onboarding() {
 
     const onSubmit = async () => {
         try {
-            setIsGenerating(true)
             const profile: Omit<UserProfile, 'userId' | 'updatedAt'> = {
                 goal: goal as UserProfile['goal'],
                 levels: level as UserProfile['levels'],
@@ -155,6 +154,10 @@ export default function Onboarding() {
 
 
             await saveProfile(profile);
+            setIsGenerating(true);
+            await generatePlan();
+
+            navigate("/profile");
         } catch (err) {
             console.log("Error in submitting the data", err instanceof Error);
         } finally {
