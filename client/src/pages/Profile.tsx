@@ -2,7 +2,7 @@ import { Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 export default function Profile() {
-    const { user, loading } = useAuth();
+    const { user, loading, plan } = useAuth();
     const onboardingCompleted =
         typeof window !== "undefined" &&
         window.localStorage.getItem("onboardingCompleted") === "true";

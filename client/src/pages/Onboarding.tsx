@@ -157,7 +157,7 @@ export default function Onboarding() {
             setIsGenerating(true);
             await generatePlan();
 
-            navigate("/profile");
+            navigate("/profile");e
         } catch (err) {
             console.log("Error in submitting the data", err instanceof Error);
         } finally {
